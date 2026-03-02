@@ -1,18 +1,59 @@
+:root {
+    --bg-color: #ffffff;
+    --text-color: #333333;
+    --num-bg: #f9f9f9;
+    --num-text: #333333;
+    --btn-bg: #4CAF50;
+    --btn-text: #ffffff;
+    --border-color: #dddddd;
+}
+
+body.black-mode {
+    --bg-color: #121212;
+    --text-color: #e0e0e0;
+    --num-bg: #1e1e1e;
+    --num-text: #ffffff;
+    --btn-bg: #333333;
+    --btn-text: #ffffff;
+    --border-color: #444444;
+}
+
 body {
-    background-color: #f0f0f0;
+    background-color: var(--bg-color);
+    color: var(--text-color);
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    font-family: sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: background-color 0.3s, color 0.3s;
+    margin: 0;
 }
 
 .container {
     text-align: center;
+    background-color: var(--container-bg);
+    padding: 2rem;
+    border-radius: 10px;
+}
+
+.mode-selector {
+    margin-bottom: 20px;
+}
+
+.mode-btn {
+    padding: 5px 10px;
+    margin: 0 5px;
+    cursor: pointer;
+    border: 1px solid var(--text-color);
+    background: var(--num-bg);
+    color: var(--text-color);
+    border-radius: 4px;
 }
 
 .lotto-numbers {
     display: flex;
+    justify-content: center;
     margin: 20px 0;
 }
 
@@ -20,7 +61,8 @@ body {
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    background-color: #fff;
+    background-color: var(--num-bg);
+    color: var(--num-text);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -28,14 +70,16 @@ body {
     font-size: 24px;
     font-weight: bold;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, color 0.3s;
 }
 
 #generate-btn {
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
-    background-color: #4CAF50;
-    color: white;
+    background-color: var(--btn-bg);
+    color: var(--btn-text);
     font-size: 16px;
     cursor: pointer;
+    transition: background-color 0.3s;
 }

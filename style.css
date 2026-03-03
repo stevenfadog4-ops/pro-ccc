@@ -6,6 +6,7 @@
     --btn-bg: #4CAF50;
     --btn-text: #ffffff;
     --border-color: #dddddd;
+    --container-bg: #ffffff;
 }
 
 body.black-mode {
@@ -16,18 +17,34 @@ body.black-mode {
     --btn-bg: #333333;
     --btn-text: #ffffff;
     --border-color: #444444;
+    --container-bg: #1e1e1e;
 }
 
 body {
     background-color: var(--bg-color);
     color: var(--text-color);
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     transition: background-color 0.3s, color 0.3s;
     margin: 0;
+    padding: 20px;
+}
+
+.mode-selector {
+    margin-bottom: 20px;
+}
+
+.main-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 2rem;
+    max-width: 1200px;
+    width: 100%;
 }
 
 .container {
@@ -35,10 +52,30 @@ body {
     background-color: var(--container-bg);
     padding: 2rem;
     border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    flex: 1;
+    min-width: 350px;
 }
 
-.mode-selector {
-    margin-bottom: 20px;
+.side-panel {
+    background-color: var(--container-bg);
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    width: 250px;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.display-box {
+    margin-top: 15px;
+    font-style: italic;
+    font-size: 1rem;
+    line-height: 1.5;
+    word-break: keep-all;
+    text-align: center;
 }
 
 .mode-btn {
@@ -56,10 +93,9 @@ body {
 }
 
 .character-image img {
-    max-width: 300px;
+    max-width: 100%;
     height: auto;
     border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 .lotto-numbers {
@@ -69,8 +105,8 @@ body {
 }
 
 .number {
-    width: 50px;
-    height: 50px;
+    width: 45px;
+    height: 45px;
     border-radius: 50%;
     background-color: var(--num-bg);
     color: var(--num-text);
@@ -78,14 +114,14 @@ body {
     justify-content: center;
     align-items: center;
     margin: 0 5px;
-    font-size: 24px;
+    font-size: 20px;
     font-weight: bold;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s, color 0.3s;
 }
 
 #generate-btn {
-    padding: 10px 20px;
+    padding: 12px 24px;
     border: none;
     border-radius: 5px;
     background-color: var(--btn-bg);
@@ -93,4 +129,16 @@ body {
     font-size: 16px;
     cursor: pointer;
     transition: background-color 0.3s;
+    width: 100%;
+}
+
+@media (max-width: 900px) {
+    .main-wrapper {
+        flex-direction: column;
+        align-items: center;
+    }
+    .side-panel {
+        width: 100%;
+        max-width: 350px;
+    }
 }

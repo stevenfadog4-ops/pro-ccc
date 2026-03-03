@@ -109,3 +109,41 @@ blackModeBtn.addEventListener('click', () => setMode('black'));
 
 const savedMode = localStorage.getItem('theme-mode');
 if (savedMode) setMode(savedMode);
+
+// Formspree AJAX handle
+const contactForm = document.getElementById('contact-form');
+const formStatus = document.getElementById('form-status');
+
+if (contactForm) {
+    contactForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const data = new FormData(event.target);
+        
+        try {
+            const response = await fetch(event.target.action, {
+                method: contactForm.method,
+                body: data,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+            
+            if (response.ok) {
+                formStatus.textContent = "문의가 성공적으로 전송되었습니다. 감사합니다!";
+                formStatus.className = "success";
+                contactForm.reset();
+            } else {
+                const result = await response.json();
+                if (result.errors) {
+                    formStatus.textContent = result.errors.map(error => error.message).join(", ");
+                } else {
+                    formStatus.textContent = "오류가 발생했습니다. 잠시 후 다시 시도해주세요.";
+                }
+                formStatus.className = "error";
+            }
+        } catch (error) {
+            formStatus.textContent = "네트워크 오류가 발생했습니다. 인터넷 연결을 확인해주세요.";
+            formStatus.className = "error";
+        }
+    });
+}

@@ -20,6 +20,7 @@
             <a href="https://www.cloudflare.com" target="_blank" class="nav-link">Cloudflare</a>
         </div>
         <div class="nav-right">
+            <a href="https://gemini-cli.com" target="_blank" class="nav-link">Gemini CLI</a>
             <a href="https://www.youtube.com" target="_blank" class="nav-link">유튜브</a>
         </div>
     </header>
@@ -64,6 +65,52 @@
             </div>
         </aside>
     </div>
+    <section class="contact-section">
+        <div class="contact-container">
+            <h2>고객 상담 및 문의</h2>
+            <form action="https://formspree.io/f/mbdavqlk" method="POST" id="contact-form">
+                <div class="form-group">
+                    <label for="name">이름</label>
+                    <input type="text" id="name" name="name" placeholder="성함을 입력해주세요" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">이메일</label>
+                    <input type="email" id="email" name="_replyto" placeholder="답변받을 이메일을 입력해주세요" required>
+                </div>
+                <div class="form-group">
+                    <label for="message">문의 내용</label>
+                    <textarea id="message" name="message" rows="5" placeholder="상담 내용을 입력해주세요" required></textarea>
+                </div>
+                <button type="submit" class="submit-btn">문의하기</button>
+            </form>
+            <div id="form-status"></div>
+        </div>
+    </section>
+
+    <section class="comments-section">
+        <div class="comments-container">
+            <div id="disqus_thread"></div>
+            <script>
+                /**
+                *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+                *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables    */
+                /*
+                var disqus_config = function () {
+                this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+                this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+                };
+                */
+                (function() { // DON'T EDIT BELOW THIS LINE
+                var d = document, s = d.createElement('script');
+                s.src = 'https://https-pro-c-c-1-73620043-38697-web-app.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+                })();
+            </script>
+            <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+        </div>
+    </section>
+
     <script src="main.js"></script>
 </body>
 </html>

@@ -1,0 +1,17 @@
+{
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase-debug.log",
+      "**/.*",
+      "**/node_modules/**",
+      "blueprint.md",
+      "package.json",
+      "package-lock.json",
+      "README.md",
+      ".idx/**",
+      ".vscode/**",
+      ".git/**"
+    ]
+  }
+}

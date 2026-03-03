@@ -226,3 +226,98 @@ body {
         max-width: 400px;
     }
 }
+
+/* Contact Form Styles */
+.contact-section {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+    box-sizing: border-box;
+    background-color: var(--num-bg);
+    margin-top: 20px;
+}
+
+.contact-container {
+    max-width: 600px;
+    width: 100%;
+    background-color: var(--container-bg);
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.contact-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input, .form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    box-sizing: border-box;
+}
+
+.submit-btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--btn-bg);
+    color: var(--btn-text);
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    width: 100%;
+}
+
+.submit-btn:hover {
+    opacity: 0.9;
+}
+
+#form-status {
+    margin-top: 15px;
+    text-align: center;
+    font-weight: bold;
+}
+
+#form-status.success {
+    color: #4CAF50;
+}
+
+#form-status.error {
+    color: #f44336;
+}
+
+/* Disqus Comments Styles */
+.comments-section {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+    box-sizing: border-box;
+    background-color: var(--bg-color);
+    margin-top: 20px;
+}
+
+.comments-container {
+    max-width: 800px;
+    width: 100%;
+    background-color: var(--container-bg);
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}

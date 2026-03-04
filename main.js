@@ -1,5 +1,4 @@
-const generateBtn = document.getElementById('generate-btn');
-const numberElements = document.querySelectorAll('.number');
+const refreshBtn = document.getElementById('refresh-btn');
 const whiteModeBtn = document.getElementById('white-mode');
 const blackModeBtn = document.getElementById('black-mode');
 const quoteDisplay = document.getElementById('quote-display');
@@ -55,22 +54,12 @@ const zodiacFortunes = [
     "원숭이띠: 지혜롭게 대처하면 위기를 넘깁니다.", "닭띠: 성실한 태도가 신뢰를 쌓게 합니다.", "개띠: 정직한 행동이 행운의 열쇠입니다.", "돼지띠: 넉넉한 마음이 풍요를 부릅니다."
 ];
 
-generateBtn.addEventListener('click', () => {
-    // 1. 애니메이션 리셋을 위해 클래스 제거
+function updateQuotesAndFortunes() {
+    // 1. 애니메이션 리셋
     quoteImg.classList.remove('show');
     fortuneImg.classList.remove('show');
 
-    // 2. 로또 번호 생성
-    const numbers = new Set();
-    while (numbers.size < 6) {
-        numbers.add(Math.floor(Math.random() * 45) + 1);
-    }
-    const sortedNumbers = Array.from(numbers).sort((a, b) => a - b);
-    numberElements.forEach((element, index) => {
-        element.textContent = sortedNumbers[index];
-    });
-
-    // 3. 명언 생성 및 이름 추출
+    // 2. 명언 생성
     const quoteIndex = Math.floor(Math.random() * philosopherQuotes.length);
     const fullQuote = philosopherQuotes[quoteIndex];
     const nameOnly = fullQuote.split(':')[0].trim();
@@ -79,7 +68,7 @@ generateBtn.addEventListener('click', () => {
     quoteImg.src = philosopherIcons[quoteIndex % philosopherIcons.length];
     quoteImg.style.display = 'block';
 
-    // 4. 운세 생성 및 이름 추출
+    // 3. 운세 생성
     const fortuneIndex = Math.floor(Math.random() * zodiacFortunes.length);
     const fullFortune = zodiacFortunes[fortuneIndex];
     const zodiacOnly = fullFortune.split(':')[0].trim();
@@ -88,12 +77,19 @@ generateBtn.addEventListener('click', () => {
     fortuneImg.src = zodiacIcons[fortuneIndex % zodiacIcons.length];
     fortuneImg.style.display = 'block';
 
-    // 5. 애니메이션 적용을 위한 지연 실행
+    // 4. 애니메이션 적용
     setTimeout(() => {
         quoteImg.classList.add('show');
         fortuneImg.classList.add('show');
     }, 50);
-});
+}
+
+if (refreshBtn) {
+    refreshBtn.addEventListener('click', updateQuotesAndFortunes);
+}
+
+// 초기 로드 시 한 번 실행
+window.addEventListener('DOMContentLoaded', updateQuotesAndFortunes);
 
 const setMode = (mode) => {
     if (mode === 'black') {
@@ -244,7 +240,6 @@ function draw() {
         ctx.fill();
         // Eyes
         ctx.fillStyle = 'black';
-        ctx.circle
         ctx.fillRect(ghost.x - 4, ghost.y - 3, 2, 2);
         ctx.fillRect(ghost.x + 2, ghost.y - 3, 2, 2);
         ctx.closePath();
@@ -269,18 +264,8 @@ canvas.addEventListener('mousemove', (e) => {
     const targetX = e.clientX - rect.left;
     const targetY = e.clientY - rect.top;
     
-    // Simple obstacle check (optional: prevent through walls)
-    let canMove = true;
-    obstacles.forEach(ob => {
-        if (targetX > ob.x && targetX < ob.x + ob.w && targetY > ob.y && targetY < ob.y + ob.h) {
-            // canMove = false; // Player can't enter walls
-        }
-    });
-    
-    if (canMove) {
-        player.x = targetX;
-        player.y = targetY;
-    }
+    player.x = targetX;
+    player.y = targetY;
 });
 
 canvas.addEventListener('touchmove', (e) => {
@@ -298,4 +283,3 @@ startBtn.addEventListener('click', () => {
     gameActive = true;
     update();
 });
-

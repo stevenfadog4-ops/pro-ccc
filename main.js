@@ -147,3 +147,155 @@ if (contactForm) {
         }
     });
 }
+
+// --- Ghost Avoidance Game Logic ---
+const canvas = document.getElementById('game-canvas');
+const ctx = canvas.getContext('2d');
+const overlay = document.getElementById('game-overlay');
+const startBtn = document.getElementById('start-btn');
+const msg = document.getElementById('game-msg');
+
+let gameActive = false;
+let score = 0;
+let player = { x: 130, y: 100, radius: 8, color: '#00ff00' };
+let ghosts = [];
+let obstacles = [
+    { x: 50, y: 50, w: 40, h: 40 },
+    { x: 170, y: 110, w: 50, h: 20 },
+    { x: 100, y: 140, w: 20, h: 40 }
+];
+
+function initGame() {
+    ghosts = [];
+    score = 0;
+    player.x = 130;
+    player.y = 100;
+    for (let i = 0; i < 4; i++) {
+        spawnGhost();
+    }
+}
+
+function spawnGhost() {
+    const side = Math.floor(Math.random() * 4);
+    let x, y;
+    if (side === 0) { x = Math.random() * canvas.width; y = -20; }
+    else if (side === 1) { x = canvas.width + 20; y = Math.random() * canvas.height; }
+    else if (side === 2) { x = Math.random() * canvas.width; y = canvas.height + 20; }
+    else { x = -20; y = Math.random() * canvas.height; }
+    
+    ghosts.push({
+        x: x,
+        y: y,
+        radius: 10,
+        speed: 1 + Math.random() * 1.5,
+        vx: 0,
+        vy: 0
+    });
+}
+
+function update() {
+    if (!gameActive) return;
+
+    // Move ghosts towards player
+    ghosts.forEach(ghost => {
+        const dx = player.x - ghost.x;
+        const dy = player.y - ghost.y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        ghost.vx = (dx / dist) * ghost.speed;
+        ghost.vy = (dy / dist) * ghost.speed;
+        
+        ghost.x += ghost.vx;
+        ghost.y += ghost.vy;
+
+        // Collision with player
+        if (dist < player.radius + ghost.radius) {
+            gameOver();
+        }
+    });
+
+    score++;
+    if (score % 300 === 0) spawnGhost(); // Spawn more over time
+
+    draw();
+    requestAnimationFrame(update);
+}
+
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw Obstacles (Terrain)
+    ctx.fillStyle = '#444';
+    obstacles.forEach(ob => {
+        ctx.fillRect(ob.x, ob.y, ob.w, ob.h);
+    });
+
+    // Draw Player
+    ctx.beginPath();
+    ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
+    ctx.fillStyle = player.color;
+    ctx.fill();
+    ctx.closePath();
+
+    // Draw Ghosts
+    ghosts.forEach(ghost => {
+        ctx.beginPath();
+        ctx.arc(ghost.x, ghost.y, ghost.radius, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+        ctx.fill();
+        // Eyes
+        ctx.fillStyle = 'black';
+        ctx.circle
+        ctx.fillRect(ghost.x - 4, ghost.y - 3, 2, 2);
+        ctx.fillRect(ghost.x + 2, ghost.y - 3, 2, 2);
+        ctx.closePath();
+    });
+
+    // Draw Score
+    ctx.fillStyle = 'white';
+    ctx.font = '12px Arial';
+    ctx.fillText(`Score: ${Math.floor(score/10)}`, 10, 20);
+}
+
+function gameOver() {
+    gameActive = false;
+    overlay.style.display = 'flex';
+    msg.textContent = `잡혔습니다! 점수: ${Math.floor(score/10)}`;
+    startBtn.textContent = '다시 시작';
+}
+
+canvas.addEventListener('mousemove', (e) => {
+    if (!gameActive) return;
+    const rect = canvas.getBoundingClientRect();
+    const targetX = e.clientX - rect.left;
+    const targetY = e.clientY - rect.top;
+    
+    // Simple obstacle check (optional: prevent through walls)
+    let canMove = true;
+    obstacles.forEach(ob => {
+        if (targetX > ob.x && targetX < ob.x + ob.w && targetY > ob.y && targetY < ob.y + ob.h) {
+            // canMove = false; // Player can't enter walls
+        }
+    });
+    
+    if (canMove) {
+        player.x = targetX;
+        player.y = targetY;
+    }
+});
+
+canvas.addEventListener('touchmove', (e) => {
+    if (!gameActive) return;
+    e.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0];
+    player.x = touch.clientX - rect.left;
+    player.y = touch.clientY - rect.top;
+}, { passive: false });
+
+startBtn.addEventListener('click', () => {
+    overlay.style.display = 'none';
+    initGame();
+    gameActive = true;
+    update();
+});
+

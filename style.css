@@ -96,131 +96,31 @@ body {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     flex: 1;
     min-width: 350px;
-}
-
-.video-wrapper-main {
-    position: relative;
-    width: 100%;
-    padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
-    height: 0;
-    margin: 20px 0;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-}
-
-.video-wrapper-main iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-}
-
-.refresh-action-btn {
-    padding: 12px 24px;
-    border: none;
-    border-radius: 5px;
-    background-color: var(--btn-bg);
-    color: var(--btn-text);
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    width: 100%;
-    font-weight: bold;
-}
-
-.refresh-action-btn:hover {
-    filter: brightness(1.1);
-}
-
-.side-panel {
-    background: var(--panel-bg);
-    padding: 1.5rem;
-    border-radius: 14px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    width: 300px;
-    min-height: 200px;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-.side-panel h2 {
-    margin-top: 0;
-    font-size: 1.2rem;
-    letter-spacing: 1px;
-}
-
-.display-box {
-    font-size: 0.95rem;
-    line-height: 1.6;
-    text-align: center;
-    padding: 10px;
-    min-height: 60px;
-}
-
-.side-image-container {
-    margin-top: 15px;
+.game-wrapper-center {
+    background: var(--num-bg);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
     width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-.side-image-container img {
-    width: 220px;
-    height: 220px;
-    border-radius: 50%;
-    border: var(--img-border);
-    box-shadow: var(--img-shadow);
-    object-fit: cover;
-    transition: transform 0.4s ease, opacity 0.4s ease;
-    opacity: 0;
-    transform: scale(0.8);
-}
-
-.side-image-container img.show {
-    opacity: 1;
-    transform: scale(1);
-}
-
-.side-image-container img:hover {
-    transform: scale(1.05);
-}
-
-.char-name {
-    margin-top: 10px;
-    font-weight: bold;
-    font-size: 0.95rem;
-    opacity: 0.8;
-    letter-spacing: 0.5px;
-}
-
-/* Ghost Game Styles */
-.game-wrapper {
-    margin-top: 30px;
-    width: 100%;
-    text-align: center;
-    border-top: 1px solid var(--border-color);
-    padding-top: 20px;
-}
-
-.game-wrapper h3 {
-    font-size: 1rem;
-    margin-bottom: 10px;
+    max-width: 640px;
 }
 
 #game-container {
     position: relative;
-    width: 260px;
-    height: 200px;
+    width: 600px;
+    height: 400px;
     background: #000;
-    margin: 0 auto;
-    border-radius: 8px;
+    margin: 10px auto;
+    border-radius: 12px;
     overflow: hidden;
     cursor: crosshair;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
 }
 
 #game-canvas {
@@ -233,7 +133,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.7);
+    background: rgba(0,0,0,0.8);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -243,24 +143,63 @@ body {
 }
 
 #game-msg {
-    margin-bottom: 10px;
+    margin-bottom: 15px;
     font-weight: bold;
+    font-size: 1.4rem;
 }
 
 #start-btn {
-    padding: 8px 20px;
+    padding: 10px 30px;
     background: #ff5722;
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
     font-weight: bold;
+    font-size: 1.1rem;
+    transition: transform 0.2s;
+}
+
+#start-btn:hover {
+    transform: scale(1.05);
+}
+
+.game-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 15px;
 }
 
 .game-desc {
-    font-size: 0.8rem;
-    margin-top: 8px;
-    opacity: 0.7;
+    font-size: 0.95rem;
+    opacity: 0.8;
+}
+
+#high-score-board {
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 15px;
+    text-align: left;
+}
+
+#high-score-board h4 {
+    margin: 0 0 10px 0;
+    font-size: 1.1rem;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 5px;
+}
+
+#rank-list {
+    margin: 0;
+    padding: 0 0 0 25px;
+    font-weight: bold;
+}
+
+#rank-list li {
+    margin-bottom: 5px;
+    font-size: 0.95rem;
 }
 
 .mode-btn {

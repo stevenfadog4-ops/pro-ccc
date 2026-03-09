@@ -150,50 +150,111 @@ const ctx = canvas.getContext('2d');
 const overlay = document.getElementById('game-overlay');
 const startBtn = document.getElementById('start-btn');
 const msg = document.getElementById('game-msg');
+const rankList = document.getElementById('rank-list');
 
 let gameActive = false;
 let score = 0;
-let player = { x: 130, y: 100, radius: 8, color: '#00ff00' };
+let level = 1;
+let player = { x: 300, y: 200, radius: 15, color: '#fff' };
 let ghosts = [];
-let obstacles = [
-    { x: 50, y: 50, w: 40, h: 40 },
-    { x: 170, y: 110, w: 50, h: 20 },
-    { x: 100, y: 140, w: 20, h: 40 }
+let bullets = [];
+let particles = [];
+let highScores = JSON.parse(localStorage.getItem('ghostHighScores')) || [];
+
+const GHOST_TYPES = [
+    { type: 'normal', color: 'rgba(255, 255, 255, 0.8)', speedMult: 1, hp: 1, size: 12 },
+    { type: 'fast', color: 'rgba(255, 255, 0, 0.8)', speedMult: 1.8, hp: 1, size: 10 },
+    { type: 'tank', color: 'rgba(255, 0, 255, 0.8)', speedMult: 0.6, hp: 3, size: 18 },
+    { type: 'shadow', color: 'rgba(100, 100, 100, 0.5)', speedMult: 1.2, hp: 2, size: 14 }
 ];
 
 function initGame() {
     ghosts = [];
+    bullets = [];
+    particles = [];
     score = 0;
-    player.x = 130;
-    player.y = 100;
-    for (let i = 0; i < 4; i++) {
-        spawnGhost();
-    }
+    level = 1;
+    player.x = 300;
+    player.y = 200;
+    updateRankDisplay();
 }
 
 function spawnGhost() {
     const side = Math.floor(Math.random() * 4);
     let x, y;
-    if (side === 0) { x = Math.random() * canvas.width; y = -20; }
-    else if (side === 1) { x = canvas.width + 20; y = Math.random() * canvas.height; }
-    else if (side === 2) { x = Math.random() * canvas.width; y = canvas.height + 20; }
-    else { x = -20; y = Math.random() * canvas.height; }
+    if (side === 0) { x = Math.random() * canvas.width; y = -30; }
+    else if (side === 1) { x = canvas.width + 30; y = Math.random() * canvas.height; }
+    else if (side === 2) { x = Math.random() * canvas.width; y = canvas.height + 30; }
+    else { x = -30; y = Math.random() * canvas.height; }
+    
+    // Type selection based on level
+    let typeIndex = 0;
+    const rand = Math.random();
+    if (level >= 4 && rand < 0.1) typeIndex = 2; // Tank
+    else if (level >= 3 && rand < 0.2) typeIndex = 3; // Shadow
+    else if (level >= 2 && rand < 0.3) typeIndex = 1; // Fast
+    
+    const ghostType = GHOST_TYPES[typeIndex];
     
     ghosts.push({
         x: x,
         y: y,
-        radius: 10,
-        speed: 1 + Math.random() * 1.5,
-        vx: 0,
-        vy: 0
+        ...ghostType,
+        speed: (1 + Math.random() * 1.5) * ghostType.speedMult * (1 + (level - 1) * 0.1),
+        currentHp: ghostType.hp
     });
+}
+
+function drawAngel(x, y) {
+    // Halo
+    ctx.beginPath();
+    ctx.ellipse(x, y - 18, 12, 5, 0, 0, Math.PI * 2);
+    ctx.strokeStyle = 'gold';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.closePath();
+
+    // Wings
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+    ctx.beginPath();
+    ctx.moveTo(x - 5, y);
+    ctx.quadraticCurveTo(x - 30, y - 20, x - 25, y + 10);
+    ctx.lineTo(x - 5, y + 5);
+    ctx.fill();
+    ctx.closePath();
+
+    ctx.beginPath();
+    ctx.moveTo(x + 5, y);
+    ctx.quadraticCurveTo(x + 30, y - 20, x + 25, y + 10);
+    ctx.lineTo(x + 5, y + 5);
+    ctx.fill();
+    ctx.closePath();
+
+    // Body (Angel)
+    ctx.beginPath();
+    ctx.arc(x, y, 12, 0, Math.PI * 2);
+    ctx.fillStyle = '#fff';
+    ctx.fill();
+    ctx.closePath();
+
+    // Eyes
+    ctx.fillStyle = '#333';
+    ctx.beginPath();
+    ctx.arc(x - 4, y - 2, 1.5, 0, Math.PI * 2);
+    ctx.arc(x + 4, y - 2, 1.5, 0, Math.PI * 2);
+    ctx.fill();
 }
 
 function update() {
     if (!gameActive) return;
 
+    // Difficulty increases over time
+    if (score > 0 && score % 1000 === 0) {
+        level++;
+    }
+
     // Move ghosts towards player
-    ghosts.forEach(ghost => {
+    ghosts.forEach((ghost, index) => {
         const dx = player.x - ghost.x;
         const dy = player.y - ghost.y;
         const dist = Math.sqrt(dx*dx + dy*dy);
@@ -204,78 +265,178 @@ function update() {
         ghost.y += ghost.vy;
 
         // Collision with player
-        if (dist < player.radius + ghost.radius) {
+        if (dist < player.radius + ghost.size) {
             gameOver();
         }
     });
 
+    // Bullets update
+    bullets.forEach((bullet, bIndex) => {
+        bullet.x += bullet.vx;
+        bullet.y += bullet.vy;
+
+        // Bullet out of bounds
+        if (bullet.x < 0 || bullet.x > canvas.width || bullet.y < 0 || bullet.y > canvas.height) {
+            bullets.splice(bIndex, 1);
+            return;
+        }
+
+        // Bullet collision with ghosts
+        ghosts.forEach((ghost, gIndex) => {
+            const dx = bullet.x - ghost.x;
+            const dy = bullet.y - ghost.y;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+
+            if (dist < ghost.size + bullet.radius) {
+                ghost.currentHp--;
+                bullets.splice(bIndex, 1);
+                
+                if (ghost.currentHp <= 0) {
+                    createParticles(ghost.x, ghost.y, ghost.color);
+                    ghosts.splice(gIndex, 1);
+                    score += 100 * ghost.hp;
+                }
+            }
+        });
+    });
+
+    // Particles update
+    particles.forEach((p, i) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life -= 0.02;
+        if (p.life <= 0) particles.splice(i, 1);
+    });
+
     score++;
-    if (score % 300 === 0) spawnGhost(); // Spawn more over time
+    const spawnRate = Math.max(10, 60 - (level * 5));
+    if (score % spawnRate === 0) spawnGhost();
 
     draw();
     requestAnimationFrame(update);
 }
 
+function createParticles(x, y, color) {
+    for (let i = 0; i < 8; i++) {
+        particles.push({
+            x: x,
+            y: y,
+            vx: (Math.random() - 0.5) * 4,
+            vy: (Math.random() - 0.5) * 4,
+            life: 1,
+            color: color
+        });
+    }
+}
+
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Draw Obstacles (Terrain)
-    ctx.fillStyle = '#444';
-    obstacles.forEach(ob => {
-        ctx.fillRect(ob.x, ob.y, ob.w, ob.h);
-    });
+    // Background Grid
+    ctx.strokeStyle = '#222';
+    ctx.lineWidth = 1;
+    for(let i=0; i<canvas.width; i+=40) {
+        ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke();
+    }
+    for(let i=0; i<canvas.height; i+=40) {
+        ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(canvas.width, i); ctx.stroke();
+    }
 
     // Draw Player
-    ctx.beginPath();
-    ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
-    ctx.fillStyle = player.color;
-    ctx.fill();
-    ctx.closePath();
+    drawAngel(player.x, player.y);
 
     // Draw Ghosts
     ghosts.forEach(ghost => {
         ctx.beginPath();
-        ctx.arc(ghost.x, ghost.y, ghost.radius, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+        ctx.arc(ghost.x, ghost.y, ghost.size, 0, Math.PI * 2);
+        ctx.fillStyle = ghost.color;
         ctx.fill();
-        // Eyes
+        
+        // Ghost Face
         ctx.fillStyle = 'black';
-        ctx.fillRect(ghost.x - 4, ghost.y - 3, 2, 2);
-        ctx.fillRect(ghost.x + 2, ghost.y - 3, 2, 2);
+        ctx.fillRect(ghost.x - ghost.size*0.4, ghost.y - ghost.size*0.3, 2, 2);
+        ctx.fillRect(ghost.x + ghost.size*0.2, ghost.y - ghost.size*0.3, 2, 2);
         ctx.closePath();
+
+        // HP bar for tank
+        if (ghost.hp > 1) {
+            ctx.fillStyle = 'red';
+            ctx.fillRect(ghost.x - 10, ghost.y - ghost.size - 5, 20, 3);
+            ctx.fillStyle = 'green';
+            ctx.fillRect(ghost.x - 10, ghost.y - ghost.size - 5, (ghost.currentHp / ghost.hp) * 20, 3);
+        }
     });
 
-    // Draw Score
+    // Draw Bullets
+    bullets.forEach(bullet => {
+        ctx.beginPath();
+        ctx.arc(bullet.x, bullet.y, bullet.radius, 0, Math.PI * 2);
+        ctx.fillStyle = 'cyan';
+        ctx.fill();
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = 'cyan';
+        ctx.closePath();
+        ctx.shadowBlur = 0;
+    });
+
+    // Draw Particles
+    particles.forEach(p => {
+        ctx.globalAlpha = p.life;
+        ctx.fillStyle = p.color;
+        ctx.fillRect(p.x, p.y, 3, 3);
+    });
+    ctx.globalAlpha = 1;
+
+    // Draw Score and Level
     ctx.fillStyle = 'white';
-    ctx.font = '12px Arial';
-    ctx.fillText(`Score: ${Math.floor(score/10)}`, 10, 20);
+    ctx.font = 'bold 16px Arial';
+    ctx.fillText(`Score: ${score}`, 20, 30);
+    ctx.fillText(`Level: ${level}`, 20, 55);
+}
+
+function saveHighScore(newScore) {
+    highScores.push(newScore);
+    highScores.sort((a, b) => b - a);
+    highScores = highScores.slice(0, 5);
+    localStorage.setItem('ghostHighScores', JSON.stringify(highScores));
+    updateRankDisplay();
+}
+
+function updateRankDisplay() {
+    if (!rankList) return;
+    rankList.innerHTML = highScores.map((s, i) => `<li>${i+1}위: ${s}점</li>`).join('') || '<li>기록 없음</li>';
 }
 
 function gameOver() {
     gameActive = false;
     overlay.style.display = 'flex';
-    msg.textContent = `잡혔습니다! 점수: ${Math.floor(score/10)}`;
-    startBtn.textContent = '다시 시작';
+    msg.innerHTML = `천사가 잡혔습니다!<br>최종 점수: ${score}<br>최종 레벨: ${level}`;
+    startBtn.textContent = '다시 도전';
+    saveHighScore(score);
 }
 
 canvas.addEventListener('mousemove', (e) => {
     if (!gameActive) return;
     const rect = canvas.getBoundingClientRect();
-    const targetX = e.clientX - rect.left;
-    const targetY = e.clientY - rect.top;
-    
-    player.x = targetX;
-    player.y = targetY;
+    player.x = e.clientX - rect.left;
+    player.y = e.clientY - rect.top;
 });
 
-canvas.addEventListener('touchmove', (e) => {
+canvas.addEventListener('mousedown', (e) => {
     if (!gameActive) return;
-    e.preventDefault();
     const rect = canvas.getBoundingClientRect();
-    const touch = e.touches[0];
-    player.x = touch.clientX - rect.left;
-    player.y = touch.clientY - rect.top;
-}, { passive: false });
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    
+    const angle = Math.atan2(mouseY - player.y, mouseX - player.x);
+    bullets.push({
+        x: player.x,
+        y: player.y,
+        vx: Math.cos(angle) * 7,
+        vy: Math.sin(angle) * 7,
+        radius: 4
+    });
+});
 
 startBtn.addEventListener('click', () => {
     overlay.style.display = 'none';
@@ -283,3 +444,7 @@ startBtn.addEventListener('click', () => {
     gameActive = true;
     update();
 });
+
+// Initial rank display
+updateRankDisplay();
+

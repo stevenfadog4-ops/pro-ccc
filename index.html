@@ -39,24 +39,25 @@
                 <img id="quote-img" src="" alt="" style="display: none;">
                 <p id="quote-name" class="char-name"></p>
             </div>
-            
-            <div class="game-wrapper">
-                <h3>유령 피하기 게임</h3>
+        </aside>
+
+        <div class="container">
+            <div class="game-wrapper-center">
+                <h3>👼 유령 피하기 & 퇴치 게임</h3>
                 <div id="game-container">
-                    <canvas id="game-canvas" width="260" height="200"></canvas>
+                    <canvas id="game-canvas" width="600" height="400"></canvas>
                     <div id="game-overlay">
                         <p id="game-msg">클릭하여 시작!</p>
                         <button id="start-btn">시작</button>
                     </div>
                 </div>
-                <p class="game-desc">마우스/터치로 유령을 피하세요!</p>
-            </div>
-        </aside>
-
-        <div class="container">
-            <h1>추천 영상</h1>
-            <div class="video-wrapper-main">
-                <iframe src="https://www.youtube.com/embed/u5CVsCnxyXg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                <div class="game-controls">
+                    <p class="game-desc">마우스로 이동하여 유령을 피하고, 클릭하여 공격하세요!</p>
+                    <div id="high-score-board">
+                        <h4>🏆 최고 기록 랭킹</h4>
+                        <ol id="rank-list"></ol>
+                    </div>
+                </div>
             </div>
             <button id="refresh-btn" class="refresh-action-btn">명언 및 운세 새로고침</button>
         </div>
